@@ -41,10 +41,4 @@ public class CarouselArrows : MonoBehaviour
     {
         maxPage = this.gameObject.transform.childCount - 1; 
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        Debug.LogError(currentPage);
-    }
 }
