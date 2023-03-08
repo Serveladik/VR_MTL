@@ -7,6 +7,12 @@ public class ReactionGame : MonoBehaviour
 {
     [SerializeField] int widthCells = 8;
     [SerializeField] int heightCells = 6;
+    public GameObject row;
+    public GameObject cells;
+
+    [SerializeField] int fillRow = 1;
+    [SerializeField] int fillCell = 1;
+    [SerializeField] Sprite spriteFill;
 
     void Start()
     {
@@ -16,17 +22,18 @@ public class ReactionGame : MonoBehaviour
     
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.F))
+        {
+            FillCell(fillRow, fillCell);
+        }
     }
-
+    
 
     void CreateCells(int width, int height)
     {
-        GameObject rowParent;
-        GameObject cell;
         for(int i = 0; i < width; i++)
         {
-            rowParent = Instantiate(new GameObject(), this.gameObject.transform.position, this.gameObject.transform.rotation, this.gameObject.transform);
+            GameObject rowParent = Instantiate(row, this.gameObject.transform.position, this.gameObject.transform.rotation, this.gameObject.transform);
             rowParent.AddComponent<RectTransform>();
             rowParent.GetComponent<RectTransform>().sizeDelta = new Vector2 (widthCells * 100, 100);
 
@@ -35,11 +42,19 @@ public class ReactionGame : MonoBehaviour
 
             for(int j = 0; j < width; j++)
             {
-                cell = Instantiate(new GameObject(), this.gameObject.transform.position, this.gameObject.transform.rotation, rowParent.transform);
+                GameObject cell = Instantiate(cells, this.gameObject.transform.position, this.gameObject.transform.rotation, rowParent.transform);
                 cell.AddComponent<RectTransform>();
                 cell.AddComponent<Image>();
                 cell.name = "Cell " + j;
             }
         }
+    }
+
+    void FillCell(int row, int cell)
+    {
+        GameObject rowCount = this.gameObject.transform.GetChild(row).gameObject;
+        GameObject cellCount = rowCount.gameObject.transform.GetChild(cell).gameObject;
+        cellCount.GetComponent<Image>().sprite = spriteFill;
+        cellCount.GetComponent<Image>().enabled = true;
     }
 }
