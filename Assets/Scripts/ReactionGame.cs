@@ -5,18 +5,20 @@ using UnityEngine.UI;
 
 public class ReactionGame : MonoBehaviour
 {
-    [SerializeField] int widthCells = 8;
-    [SerializeField] int heightCells = 6;
+    public int panelNumber = 0;
+    [SerializeField] GameObject[] gamePanels;
+    public int widthCells = 8;
+    public int heightCells = 6;
     public GameObject row;
     public GameObject cells;
 
-    [SerializeField] int fillRow = 1;
-    [SerializeField] int fillCell = 1;
-    [SerializeField] Sprite spriteFill;
+    public int fillRow = 1;
+    public int fillCell = 1;
+    public Sprite spriteFill;
 
     void Start()
     {
-        CreateCells(widthCells,heightCells);
+        CreateCells(gamePanels.Length, widthCells, heightCells);
     }
 
     
@@ -24,37 +26,59 @@ public class ReactionGame : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.F))
         {
-            FillCell(fillRow, fillCell);
+            FillCell(panelNumber, fillRow, fillCell);
+        }
+        if(Input.GetKeyDown(KeyCode.D))
+        {
+            EmptyCell(panelNumber, fillRow, fillCell);
         }
     }
     
 
-    void CreateCells(int width, int height)
+    void CreateCells(int panelsCount, int width, int height)
     {
-        for(int i = 0; i < width; i++)
+        for(int panelNumber = 0; panelNumber < gamePanels.Length; panelNumber++)
         {
-            GameObject rowParent = Instantiate(row, this.gameObject.transform.position, this.gameObject.transform.rotation, this.gameObject.transform);
-            rowParent.AddComponent<RectTransform>();
-            rowParent.GetComponent<RectTransform>().sizeDelta = new Vector2 (widthCells * 100, 100);
-
-            rowParent.AddComponent<HorizontalLayoutGroup>();
-            rowParent.name = "Row " + i;
-
-            for(int j = 0; j < width; j++)
+            for(int i = 0; i < width; i++)
             {
-                GameObject cell = Instantiate(cells, this.gameObject.transform.position, this.gameObject.transform.rotation, rowParent.transform);
-                cell.AddComponent<RectTransform>();
-                cell.AddComponent<Image>();
-                cell.name = "Cell " + j;
+                GameObject rowParent = Instantiate(row, this.gameObject.transform.position, this.gameObject.transform.rotation, this.gamePanels[panelNumber].transform);
+                rowParent.AddComponent<RectTransform>();
+                rowParent.GetComponent<RectTransform>().sizeDelta = new Vector2 (widthCells * 100, 100);
+
+                rowParent.AddComponent<HorizontalLayoutGroup>();
+                rowParent.name = "Row " + i;
+
+                for(int j = 0; j < width; j++)
+                {
+                    GameObject cell = Instantiate(cells, this.gameObject.transform.position, this.gameObject.transform.rotation, rowParent.transform);
+                    cell.AddComponent<RectTransform>();
+                    cell.AddComponent<Image>();
+                    cell.name = "Cell " + j;
+                }
             }
         }
     }
-
-    void FillCell(int row, int cell)
+    
+    public Image showedImage;
+    public void FillCell(int panelNumber, int row, int cell)
     {
-        GameObject rowCount = this.gameObject.transform.GetChild(row).gameObject;
+        GameObject panel = this.gameObject.transform.GetChild(panelNumber).gameObject;
+        GameObject rowCount = panel.transform.GetChild(row).gameObject;
         GameObject cellCount = rowCount.gameObject.transform.GetChild(cell).gameObject;
-        cellCount.GetComponent<Image>().sprite = spriteFill;
-        cellCount.GetComponent<Image>().enabled = true;
+
+        showedImage = cellCount.GetComponent<Image>();
+        showedImage.sprite = spriteFill;
+        showedImage.enabled = true;
+    }
+
+    void EmptyCell(int panelNumber, int row, int cell)
+    {
+        GameObject panel = this.gameObject.transform.GetChild(panelNumber).gameObject;
+        GameObject rowCount = panel.transform.GetChild(row).gameObject;
+        GameObject cellCount = rowCount.gameObject.transform.GetChild(cell).gameObject;
+
+        showedImage = cellCount.GetComponent<Image>();
+        showedImage.sprite = null;
+        showedImage.enabled = false;
     }
 }
